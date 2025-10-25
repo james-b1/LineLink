@@ -10,9 +10,8 @@ from typing import Dict, List, Tuple
 from datetime import datetime
 
 # Add ieee738 to path (adjust based on your structure)
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'ieee738'))
-import ieee738
-from ieee738 import ConductorParams
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from ieee738 import Conductor, ConductorParams
 
 
 class LineRatingCalculator:
@@ -75,7 +74,7 @@ class LineRatingCalculator:
             'THi': 50,
             'RLo': conductor['RES_25C'] / 5280,  # Convert ohms/mile to ohms/ft
             'RHi': conductor['RES_50C'] / 5280,
-            'Diameter': conductor['CDRAD_IN'] * 2,  # Radius to diameter
+            'Diameter': conductor['CDRAD_in'] * 2,  # Radius to diameter (lowercase 'in' to match CSV)
             'Tc': line['MOT']  # Maximum Operating Temperature
         }
         
@@ -85,7 +84,7 @@ class LineRatingCalculator:
         try:
             # Calculate rating using IEEE-738
             cp = ConductorParams(**all_params)
-            con = ieee738.Conductor(cp)
+            con = Conductor(cp)
             rating_amps = con.steady_state_thermal_rating()
             
             # Convert to MVA

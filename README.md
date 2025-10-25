@@ -140,32 +140,44 @@ pip install -r requirements.txt
 
 ### Step 4: Configure Environment
 
-Create `.env` file in `backend/`:
-```bash
-# OpenWeatherMap (REQUIRED)
-OPENWEATHER_API_KEY=your_api_key_here
+**Copy the `.env.example` file to create your `.env` file:**
 
-# Twilio (Optional)
+```bash
+cd backend
+cp .env.example .env
+```
+
+Then edit `.env` with your actual API keys:
+```bash
+# REQUIRED: OpenWeatherMap API Key
+OPENWEATHER_API_KEY=your_actual_api_key_here
+
+# OPTIONAL: Twilio (SMS alerts)
 TWILIO_ACCOUNT_SID=your_sid
 TWILIO_AUTH_TOKEN=your_token
 TWILIO_PHONE_NUMBER=+1234567890
 
-# SendGrid (Optional)
+# OPTIONAL: SendGrid (Email alerts)
 SENDGRID_API_KEY=your_key
 SENDGRID_FROM_EMAIL=verified@email.com
 
-# Alert Recipients
-ALERT_RECIPIENTS_SMS=+1234567890,+0987654321
-ALERT_RECIPIENTS_EMAIL=user1@example.com,user2@example.com
+# Alert Recipients (comma-separated)
+ALERT_RECIPIENTS_SMS=+1234567890
+ALERT_RECIPIENTS_EMAIL=your@email.com
 
-# Grid Location (Hawaii)
+# Grid Location (Hawaii test data)
 GRID_LATITUDE=21.3099
 GRID_LONGITUDE=-157.8581
 
-# Thresholds
+# Alert Thresholds (%)
 CRITICAL_THRESHOLD=95
 WARNING_THRESHOLD=80
+
+# Database (SQLite)
+DATABASE_URL=sqlite:///linelink.db
 ```
+
+**Note:** The system will work with just the OpenWeatherMap API key. SMS and email notifications are optional.
 
 ### Step 5: Copy Data Files
 
@@ -176,15 +188,18 @@ Copy hackathon data to `backend/data/`:
 - `buses.csv`
 - `oneline_lines.geojson`
 
-### Step 6: Copy Code Files
+### Step 6: Project Structure
 
-Organize files as follows:
+Your project should be organized as follows:
 ```
 LineLink/
 ├── backend/
 │   ├── app.py                    # Main Flask app
-│   ├── .env                      # API keys (don't commit!)
-│   ├── requirements.txt
+│   ├── init_db.py                # Database initialization script
+│   ├── .env                      # API keys (copy from .env.example)
+│   ├── .env.example              # Environment variable template
+│   ├── requirements.txt          # Python dependencies
+│   ├── linelink.db              # SQLite database (created on first run)
 │   │
 │   ├── data/                     # Grid data
 │   │   ├── lines.csv
@@ -193,14 +208,22 @@ LineLink/
 │   │   ├── buses.csv
 │   │   └── oneline_lines.geojson
 │   │
-│   ├── modules/
-│   │   ├── weather.py
-│   │   ├── calculations.py
-│   │   ├── alerts.py
-│   │   └── notifications.py
+│   ├── modules/                  # Business logic modules
+│   │   ├── __init__.py
+│   │   ├── weather.py           # OpenWeatherMap integration
+│   │   ├── calculations.py       # IEEE-738 line rating calculator
+│   │   ├── alerts.py            # Alert generation logic
+│   │   └── notifications.py      # SMS/Email notifications
 │   │
-│   └── ieee738/                  # Provided library
-│       └── ...
+│   ├── database/                 # Database layer
+│   │   ├── __init__.py
+│   │   ├── db.py                # Connection management
+│   │   ├── models.py            # SQLAlchemy ORM models
+│   │   └── repositories.py      # Data access layer
+│   │
+│   └── ieee738/                  # IEEE-738 calculation library
+│       ├── __init__.py
+│       └── conductor.py         # Thermal rating calculations
 │
 └── frontend/
     ├── index.html
@@ -217,7 +240,47 @@ LineLink/
 
 ## 🚀 Running the Application
 
-### Start the Backend Server
+### Step 1: Initialize the Database (First Time Only)
+
+```bash
+cd backend
+python init_db.py
+```
+
+You should see:
+```
+============================================================
+LineLink Database Initialization
+============================================================
+
+Initializing database...
+✓ Database tables created successfully
+
+Running health check...
+✓ Database is healthy
+  Location: linelink.db
+  Tables created: alert_history, weather_readings, line_rating_history, system_logs
+
+============================================================
+Database initialization complete!
+============================================================
+```
+
+**Optional**: Initialize with test data:
+```bash
+python init_db.py --test-data
+```
+
+**Database Management Commands:**
+```bash
+# Check database health
+python init_db.py --health-check
+
+# Reset database (WARNING: deletes all data)
+python init_db.py --reset
+```
+
+### Step 2: Start the Backend Server
 
 ```bash
 cd backend
@@ -226,19 +289,51 @@ python app.py
 
 You should see:
 ```
+============================================================
 LineLink - Transmission Line Stress Predictor
-Loaded 40 transmission lines
+============================================================
+
+Database: ✓ Connected
+  Tables: alert_history, weather_readings, line_rating_history, system_logs
+
+Loaded 77 transmission lines
 Weather service: ✓ Active
-SMS alerts: ✓ Enabled
-Email alerts: ✓ Enabled
+SMS alerts: ✓ Enabled (or ⚠ Disabled if not configured)
+Email alerts: ✓ Enabled (or ⚠ Disabled if not configured)
 
 Starting server...
 Dashboard: http://localhost:5000
+API Docs: http://localhost:5000/api/health
+
+Press Ctrl+C to stop
 ```
 
-### Access the Dashboard
+### Step 3: Access the Dashboard
 
 Open browser: **http://localhost:5000**
+
+Test the API health endpoint:
+```bash
+curl http://localhost:5000/api/health
+```
+
+Expected response:
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-01-25T14:30:00",
+  "services": {
+    "weather": true,
+    "calculations": true,
+    "notifications": true,
+    "database": true
+  },
+  "database": {
+    "healthy": true,
+    "tables": ["alert_history", "weather_readings", "line_rating_history", "system_logs"]
+  }
+}
+```
 
 ---
 
@@ -337,6 +432,122 @@ Returns GeoJSON with current loading data
 
 ---
 
+## 🏗️ Backend Architecture Details
+
+### IEEE-738 Implementation
+
+The project includes a custom implementation of the IEEE-738 standard for calculating transmission line thermal ratings. Located in `backend/ieee738/`, this module:
+
+**Key Features:**
+- Calculates steady-state thermal rating (ampacity) based on heat balance
+- Accounts for:
+  - **Solar heat gain** (time of day, season, atmospheric clarity)
+  - **Resistive heating** (I²R losses in the conductor)
+  - **Convective cooling** (wind speed and direction)
+  - **Radiative cooling** (surface emissivity and ambient temperature)
+- Uses Pydantic for type-safe parameter validation
+- Implements air property calculations (density, viscosity, thermal conductivity)
+
+**Usage Example:**
+```python
+from ieee738 import Conductor, ConductorParams
+
+params = ConductorParams(
+    Ta=35,                    # Ambient temp (°C)
+    WindVelocity=6.56,        # Wind speed (ft/s)
+    WindAngleDeg=90,          # Perpendicular wind
+    SunTime=14,               # 2 PM
+    Date='21 Jun',            # Summer
+    Diameter=0.741,           # Conductor diameter (inches)
+    TLo=25, THi=50,          # Reference temperatures
+    RLo=0.0001, RHi=0.00011, # Resistance at ref temps
+    Tc=85,                    # Max operating temp
+    Latitude=21.31,
+    Elevation=1000
+)
+
+conductor = Conductor(params)
+rating_amps = conductor.steady_state_thermal_rating()
+```
+
+### Database Schema
+
+The SQLite database stores historical data for analysis and trend detection:
+
+**Tables:**
+
+1. **alert_history**
+   - Tracks all alerts sent (when, severity, recipients)
+   - Enables alert deduplication to prevent spam
+   - Provides analytics on system performance
+
+2. **weather_readings**
+   - Caches weather API responses
+   - Reduces API calls (1000/day limit on free tier)
+   - Links to line_rating_history for correlation
+
+3. **line_rating_history**
+   - Stores calculated ratings over time
+   - Enables trend analysis and ML training
+   - Foreign key to weather_readings
+
+4. **system_logs**
+   - Application event logging
+   - Error tracking and debugging
+   - Audit trail
+
+**Data Access Layer:**
+
+The `database/repositories.py` module provides clean interfaces:
+```python
+from database.repositories import AlertRepository
+from database.db import get_db
+
+# Save an alert
+with get_db() as db:
+    alert_data = {
+        'line_name': 'L5',
+        'severity': 'CRITICAL',
+        'loading_pct': 97.5,
+        'predicted_time': datetime.now(),
+        # ... more fields
+    }
+    AlertRepository.save_alert(db, alert_data)
+
+# Query recent alerts
+with get_db() as db:
+    recent = AlertRepository.get_recent_alerts(db, hours=24)
+    stats = AlertRepository.get_alert_statistics(db, days=7)
+```
+
+### Module Organization
+
+**modules/weather.py**
+- OpenWeatherMap API integration
+- Current conditions and hourly forecasts
+- Automatic conversion to IEEE-738 format
+- Graceful fallback if API unavailable
+
+**modules/calculations.py**
+- Line rating calculator using IEEE-738
+- Batch processing for all lines
+- System health metrics
+- Temperature failure analysis
+
+**modules/alerts.py**
+- Alert generation based on thresholds
+- Forecast analysis (24-hour ahead)
+- Alert prioritization logic
+- Cooldown to prevent spam
+
+**modules/notifications.py**
+- Multi-channel delivery (SMS via Twilio, Email via SendGrid)
+- Configurable recipients
+- Graceful degradation if services unavailable
+- Free alternative (email-to-SMS gateways)
+
+---
+
 ## 🎓 How It Works
 
 ### IEEE-738 Calculation Process
@@ -388,10 +599,48 @@ else:
 
 ## 🧪 Testing
 
-### Test Weather Integration
+### Test Database
+
 ```bash
-cd backend/modules
-python weather.py
+cd backend
+python init_db.py --health-check
+```
+
+Expected output:
+```
+Running database health check...
+  Status: ✓ Healthy
+  Database: linelink.db
+  Tables: 4
+    - alert_history
+    - weather_readings
+    - line_rating_history
+    - system_logs
+```
+
+### Test IEEE-738 Library
+
+```bash
+cd backend
+python ieee738/conductor.py
+```
+
+Expected output:
+```
+Conductor: 336.4 ACSR 30/7 ORIOLE
+Ambient Temperature: 25.0°C
+Wind Speed: 6.56 ft/s
+Max Operating Temp: 75.0°C
+Thermal Rating: 1463 Amps
+Rating at 69 kV: 175 MVA
+Rating at 138 kV: 350 MVA
+```
+
+### Test Weather Integration
+
+```bash
+cd backend
+python modules/weather.py
 ```
 
 Expected output:
@@ -402,35 +651,23 @@ Current Weather:
   Conditions: clear sky
 ```
 
-### Test Calculations
-```bash
-cd backend/modules
-python calculations.py
-```
-
-Expected output:
-```
-Top 10 Most Loaded Lines:
-  L5: SURF69 TO TURTLE69: 87.2% WARNING
-  L12: FLOWER69 TO HONOLULU69: 82.1% WARNING
-  ...
-```
-
 ### Test Notifications
+
 ```bash
-cd backend/modules
-python notifications.py
+cd backend
+python modules/notifications.py
 ```
 
 Sends test SMS + email to configured recipients.
 
 ### Test Full System
+
 ```bash
 # Start server
 cd backend
 python app.py
 
-# In another terminal
+# In another terminal, test the health endpoint
 curl http://localhost:5000/api/health
 ```
 
@@ -438,13 +675,27 @@ Expected:
 ```json
 {
   "status": "ok",
+  "timestamp": "2025-01-25T14:30:00",
   "services": {
     "weather": true,
     "calculations": true,
-    "notifications": true
+    "notifications": true,
+    "database": true
+  },
+  "database": {
+    "healthy": true,
+    "tables": ["alert_history", "weather_readings", "line_rating_history", "system_logs"]
   }
 }
 ```
+
+### Test Current Conditions Endpoint
+
+```bash
+curl http://localhost:5000/api/current-conditions
+```
+
+This will fetch real weather data and calculate ratings for all lines.
 
 ---
 

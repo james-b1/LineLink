@@ -18,9 +18,15 @@ from modules.notifications import NotificationService
 
 load_dotenv()
 
+# Initialize database
+from database.db import init_db, check_database_health
+
 # Initialize Flask app
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)  # Enable CORS for frontend
+
+# Initialize database on startup
+init_db()
 
 # Initialize services
 weather_service = WeatherService()
@@ -45,13 +51,20 @@ def index():
 @app.route('/api/health')
 def health_check():
     """Health check endpoint"""
+    db_health = check_database_health()
+
     return jsonify({
         'status': 'ok',
         'timestamp': datetime.now().isoformat(),
         'services': {
             'weather': weather_service.api_key is not None,
             'calculations': len(calculator.lines) > 0,
-            'notifications': notifier.twilio_enabled or notifier.sendgrid_enabled
+            'notifications': notifier.twilio_enabled or notifier.sendgrid_enabled,
+            'database': db_health['healthy']
+        },
+        'database': {
+            'healthy': db_health['healthy'],
+            'tables': db_health.get('tables', []) if db_health['healthy'] else []
         }
     })
 
@@ -363,15 +376,22 @@ def test_notifications():
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("GridGuard - Transmission Line Stress Predictor")
+    print("LineLink - Transmission Line Stress Predictor")
     print("="*60)
+
+    # Check database
+    db_health = check_database_health()
+    print(f"\nDatabase: {'✓ Connected' if db_health['healthy'] else '✗ Error'}")
+    if db_health['healthy']:
+        print(f"  Tables: {', '.join(db_health['tables'])}")
+
     print(f"\nLoaded {len(calculator.lines)} transmission lines")
     print(f"Weather service: {'✓ Active' if weather_service.api_key else '✗ Not configured'}")
     print(f"SMS alerts: {'✓ Enabled' if notifier.twilio_enabled else '⚠ Disabled'}")
     print(f"Email alerts: {'✓ Enabled' if notifier.sendgrid_enabled else '⚠ Disabled'}")
     print("\nStarting server...")
-    print("Dashboard: http://localhost:5000")
-    print("API Docs: http://localhost:5000/api/health")
+    print("Dashboard: http://localhost:5001")
+    print("API Docs: http://localhost:5001/api/health")
     print("\nPress Ctrl+C to stop\n")
-    
-    app.run(debug=True, host='0.0.0.0', port=5000)
+
+    app.run(debug=True, host='0.0.0.0', port=5001)
