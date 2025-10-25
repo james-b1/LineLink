@@ -1,0 +1,623 @@
+# LineLink - Real-Time Transmission Line Stress Predictor
+
+**OSU Hackathon - AEP Challenge Submission**
+
+A predictive alert system that monitors transmission line stress under changing weather conditions and sends automated notifications when lines approach dangerous loading levels.
+
+---
+
+## 🎯 Project Overview
+
+### The Challenge
+The electrical grid is at risk of being pushed past its limits as weather conditions change. AEP Transmission Planners need real-time visibility into:
+1. When lines will exceed safe limits under different weather conditions
+2. Which lines show stress first as temperatures rise
+3. Overall system stress severity
+
+### Our Solution
+GridGuard is a web-based dashboard that:
+- **Fetches live weather data** from OpenWeatherMap API
+- **Calculates dynamic line ratings** using IEEE-738 standard
+- **Predicts 24-hour ahead** line loading conditions
+- **Sends automated alerts** via SMS/Email when lines approach limits
+- **Visualizes stress** on interactive maps and charts
+
+---
+
+## ✨ Key Features
+
+### 1. Real-Time Monitoring
+- Live weather conditions (temperature, wind speed)
+- Current line loading percentages for all 40+ lines
+- System health dashboard (normal/warning/critical counts)
+
+### 2. 24-Hour Predictive Alerts
+- Hourly forecast of line ratings
+- Automated identification of critical periods
+- "Peak stress time" detection
+
+### 3. Multi-Channel Notifications
+- **SMS alerts** via Twilio (top 3 critical lines)
+- **Email alerts** with detailed tables
+- Configurable thresholds (default: 80% warning, 95% critical)
+
+### 4. Interactive Visualization
+- **Color-coded map**: Lines change color based on loading (green → yellow → red → gray)
+- **Forecast charts**: Multi-axis chart showing temperature, loading, and critical line count
+- **Priority tables**: Auto-sorted by loading percentage
+
+### 5. Scenario Testing
+- Sliders to test different temperatures (20-50°C) and wind speeds (0-20 ft/s)
+- Instant recalculation of all line ratings
+- "What-if" analysis for planning
+
+---
+
+## 🏗️ Architecture
+
+```
+Frontend (HTML/JS/Bootstrap)
+    ↓ HTTP Requests
+Backend (Flask API)
+    ↓ Coordinates
+├── Weather Service → OpenWeatherMap API
+├── Calculation Engine → IEEE-738 Library
+├── Alert Manager → Logic for thresholds
+└── Notification Service → Twilio/SendGrid APIs
+```
+
+### Tech Stack
+- **Backend**: Python 3.12, Flask, Pandas
+- **Frontend**: Bootstrap 5, Chart.js, Leaflet.js
+- **APIs**: OpenWeatherMap, Twilio (SMS), SendGrid (Email)
+- **Data**: IEEE-738 calculations, CSV grid data
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+- Python 3.12+
+- Git
+- API Keys (see Step 3)
+
+### Step 1: Clone and Setup Environment
+
+```bash
+# Create project directory
+mkdir LineLink
+cd LineLink
+
+# Create virtual environment
+python -m venv venv
+
+# Activate (Windows)
+venv\Scripts\activate
+
+# Activate (Mac/Linux)
+source venv/bin/activate
+```
+
+### Step 2: Install Dependencies
+
+Create `requirements.txt`:
+```
+Flask==3.0.0
+Flask-CORS==4.0.0
+pandas==2.1.4
+requests==2.31.0
+python-dotenv==1.0.0
+APScheduler==3.10.4
+twilio==8.10.0
+sendgrid==6.11.0
+geojson==3.1.0
+pydantic==2.5.0
+```
+
+Install:
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Get API Keys
+
+#### OpenWeatherMap (Required)
+1. Sign up: https://openweathermap.org/api
+2. Free tier: 1,000 calls/day
+3. Copy your API key
+
+#### Twilio (Optional - for SMS)
+1. Sign up: https://www.twilio.com/try-twilio
+2. Free $15 credit
+3. Get: Account SID, Auth Token, Phone Number
+4. Verify your personal phone
+
+#### SendGrid (Optional - for Email)
+1. Sign up: https://sendgrid.com/
+2. Free tier: 100 emails/day
+3. Create API key with "Mail Send" permission
+4. Verify sender email
+
+### Step 4: Configure Environment
+
+Create `.env` file in `backend/`:
+```bash
+# OpenWeatherMap (REQUIRED)
+OPENWEATHER_API_KEY=your_api_key_here
+
+# Twilio (Optional)
+TWILIO_ACCOUNT_SID=your_sid
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_PHONE_NUMBER=+1234567890
+
+# SendGrid (Optional)
+SENDGRID_API_KEY=your_key
+SENDGRID_FROM_EMAIL=verified@email.com
+
+# Alert Recipients
+ALERT_RECIPIENTS_SMS=+1234567890,+0987654321
+ALERT_RECIPIENTS_EMAIL=user1@example.com,user2@example.com
+
+# Grid Location (Hawaii)
+GRID_LATITUDE=21.3099
+GRID_LONGITUDE=-157.8581
+
+# Thresholds
+CRITICAL_THRESHOLD=95
+WARNING_THRESHOLD=80
+```
+
+### Step 5: Copy Data Files
+
+Copy hackathon data to `backend/data/`:
+- `lines.csv`
+- `line_flows_nominal.csv`
+- `conductor_library.csv`
+- `buses.csv`
+- `oneline_lines.geojson`
+
+### Step 6: Copy Code Files
+
+Organize files as follows:
+```
+LineLink/
+├── backend/
+│   ├── app.py                    # Main Flask app
+│   ├── .env                      # API keys (don't commit!)
+│   ├── requirements.txt
+│   │
+│   ├── data/                     # Grid data
+│   │   ├── lines.csv
+│   │   ├── line_flows_nominal.csv
+│   │   ├── conductor_library.csv
+│   │   ├── buses.csv
+│   │   └── oneline_lines.geojson
+│   │
+│   ├── modules/
+│   │   ├── weather.py
+│   │   ├── calculations.py
+│   │   ├── alerts.py
+│   │   └── notifications.py
+│   │
+│   └── ieee738/                  # Provided library
+│       └── ...
+│
+└── frontend/
+    ├── index.html
+    └── static/
+        ├── css/
+        │   └── style.css
+        └── js/
+            ├── dashboard.js
+            ├── map.js
+            └── charts.js
+```
+
+---
+
+## 🚀 Running the Application
+
+### Start the Backend Server
+
+```bash
+cd backend
+python app.py
+```
+
+You should see:
+```
+LineLink - Transmission Line Stress Predictor
+Loaded 40 transmission lines
+Weather service: ✓ Active
+SMS alerts: ✓ Enabled
+Email alerts: ✓ Enabled
+
+Starting server...
+Dashboard: http://localhost:5000
+```
+
+### Access the Dashboard
+
+Open browser: **http://localhost:5000**
+
+---
+
+## 📖 User Guide
+
+### Dashboard Overview
+
+#### Left Column
+- **Current Conditions**: Live temperature and wind speed
+- **System Health**: Count of lines in each status (normal/warning/critical/overload)
+- **Active Alerts**: Lines currently exceeding thresholds
+- **Test Scenario**: Sliders to simulate different weather conditions
+
+#### Right Column
+- **Transmission Network Map**: Interactive map with color-coded lines
+  - 🟢 Green: <80% loading (normal)
+  - 🟡 Yellow: 80-95% (warning)
+  - 🔴 Red: 95-100% (critical)
+  - ⚫ Gray: >100% (overload)
+- **24-Hour Forecast**: Chart showing predicted conditions
+- **Critical Lines Table**: List of lines requiring attention
+
+### Using the System
+
+#### View Line Details
+1. Click any line on the map
+2. Popup shows: loading %, flow, rating, status
+
+#### Run Scenario Test
+1. Adjust temperature slider (20-50°C)
+2. Adjust wind speed slider (0-20 ft/s)
+3. Click "Run Scenario"
+4. Dashboard updates with new calculations
+
+#### Send Manual Alerts
+1. Click "📤 Send Alerts Now"
+2. System sends SMS + Email to configured recipients
+3. Toast notification confirms delivery
+
+#### Monitor Forecast
+- Chart auto-updates every 5 minutes
+- Red zone indicates predicted critical periods
+- Hover over chart for detailed values
+
+---
+
+## 🔌 API Reference
+
+### GET `/api/current-conditions`
+Returns current weather and line ratings
+
+**Response:**
+```json
+{
+  "success": true,
+  "timestamp": "2025-01-25T14:30:00",
+  "weather": {
+    "temperature": 28.5,
+    "wind_speed": 8.2,
+    "description": "clear sky"
+  },
+  "system_health": {
+    "total_lines": 40,
+    "overloaded": 0,
+    "critical": 2,
+    "warning": 5,
+    "normal": 33,
+    "avg_loading": 45.3,
+    "max_loading": 96.2
+  },
+  "lines": [...]
+}
+```
+
+### GET `/api/forecast`
+Returns 24-hour forecast with predictions
+
+### GET `/api/line/<line_name>`
+Returns detailed data for specific line
+
+### POST `/api/send-alerts`
+Triggers manual alert sending
+
+### POST `/api/scenario`
+Run custom weather scenario
+```json
+{
+  "temperature": 45,
+  "wind_speed": 3.0,
+  "hour": 14
+}
+```
+
+### GET `/api/geojson/lines`
+Returns GeoJSON with current loading data
+
+---
+
+## 🎓 How It Works
+
+### IEEE-738 Calculation Process
+
+1. **Input Parameters**:
+   - Ambient temperature (°C)
+   - Wind speed (ft/s)
+   - Conductor properties (resistance, diameter)
+   - Maximum Operating Temperature (MOT)
+
+2. **Calculate Heat Balance**:
+   - Solar heat gain
+   - Resistive heating (I²R losses)
+   - Convective cooling (wind)
+   - Radiative cooling
+
+3. **Solve for Current**:
+   - Find current (Amps) that reaches MOT
+   - Convert to MVA: `MVA = √3 × I × V × 10⁻⁶`
+
+4. **Compare to Flow**:
+   - Loading % = (Actual Flow / Dynamic Rating) × 100
+
+### Alert Logic
+
+```python
+if loading >= 100%:
+    status = "OVERLOAD"  # Immediate action
+elif loading >= 95%:
+    status = "CRITICAL"  # High priority alert
+elif loading >= 80%:
+    status = "WARNING"   # Monitor closely
+else:
+    status = "OK"        # Normal operation
+```
+
+### Weather Impact Examples
+
+| Temp | Wind | Rating Change | Example Line |
+|------|------|---------------|--------------|
+| 25°C | 6.56 ft/s | Baseline (100%) | 795 ACSR @ 138kV = 215 MVA |
+| 35°C | 6.56 ft/s | -12% | Same line = 189 MVA |
+| 45°C | 6.56 ft/s | -24% | Same line = 163 MVA |
+| 35°C | 3.28 ft/s | -18% | Same line = 176 MVA |
+
+**Key Insight**: A 20°C temperature rise can reduce line capacity by ~25%!
+
+---
+
+## 🧪 Testing
+
+### Test Weather Integration
+```bash
+cd backend/modules
+python weather.py
+```
+
+Expected output:
+```
+Current Weather:
+  Temperature: 25.3°C
+  Wind Speed: 8.2 ft/s
+  Conditions: clear sky
+```
+
+### Test Calculations
+```bash
+cd backend/modules
+python calculations.py
+```
+
+Expected output:
+```
+Top 10 Most Loaded Lines:
+  L5: SURF69 TO TURTLE69: 87.2% WARNING
+  L12: FLOWER69 TO HONOLULU69: 82.1% WARNING
+  ...
+```
+
+### Test Notifications
+```bash
+cd backend/modules
+python notifications.py
+```
+
+Sends test SMS + email to configured recipients.
+
+### Test Full System
+```bash
+# Start server
+cd backend
+python app.py
+
+# In another terminal
+curl http://localhost:5000/api/health
+```
+
+Expected:
+```json
+{
+  "status": "ok",
+  "services": {
+    "weather": true,
+    "calculations": true,
+    "notifications": true
+  }
+}
+```
+
+---
+
+## 📊 Answering the Challenge Questions
+
+### 1. At what temperature do lines exceed safe limits?
+
+**Answer via Dashboard**:
+1. Use scenario sliders to increase temperature
+2. Watch system health counters
+3. Note when first line turns red (>95%)
+
+**Example Result**:
+- At 40°C with 6.56 ft/s wind: 3 lines enter WARNING
+- At 45°C with 6.56 ft/s wind: 2 lines enter CRITICAL
+- At 48°C with 3 ft/s wind: First OVERLOAD occurs
+
+**Code to Find**:
+```python
+calc = LineRatingCalculator()
+temp, line = calc.find_first_failure_temp()
+print(f"First failure at {temp}°C: {line}")
+```
+
+### 2. Which lines show stress first?
+
+**Answer via Dashboard**:
+- Check "Critical Lines Table" (auto-sorted by loading %)
+- Top lines are most vulnerable
+- Typically low-voltage lines (69kV) with older conductors
+
+**Example Results**:
+1. Line L5: SURF69 TO TURTLE69 (69kV, older ACSR)
+2. Line L12: FLOWER69 TO HONOLULU69 (69kV)
+3. Line L3: ALOHA138 TO SUNSET138 (138kV, heavily loaded)
+
+### 3. How severe is system stress?
+
+**Answer via Dashboard**:
+- System Health card shows distribution
+- Forecast chart shows trend over 24 hours
+- Peak stress time identified
+
+**Severity Levels**:
+- **🟢 Normal**: 90%+ lines <80% loading
+- **🟡 Elevated**: 5-10% lines in WARNING
+- **🟠 High**: 2+ lines in CRITICAL
+- **🔴 Emergency**: Any lines OVERLOADED
+
+---
+
+## 🎨 Demo Script (5 min presentation)
+
+### Opening (30 sec)
+"Hi, I'm [name] and this is LineLink. The power grid faces a growing challenge: as temperatures rise, transmission lines can carry less power before overheating. We built a system to predict and alert operators before lines fail."
+
+### Live Demo (3 min)
+
+**Show Current Conditions**:
+"Right now at 28°C and moderate wind, all lines are operating normally - average loading is 45%."
+
+**Show Map**:
+"Our interactive map shows 40 transmission lines in Hawaii, color-coded by stress level. Green means normal, yellow is caution, red is critical."
+
+**Show Forecast**:
+"This chart predicts the next 24 hours. Notice around 2 PM when temperature peaks at 35°C - we see max loading approaching 90%."
+
+**Run Hot Scenario**:
+"Let me simulate a hot day: 45°C, low wind. [Move sliders] Now we see 3 lines turn red, exceeding 95% capacity. The system automatically identified these as critical."
+
+**Trigger Alert**:
+"[Click Send Alerts] The system just sent SMS and email notifications to operators with a prioritized list of at-risk lines."
+
+### Closing (90 sec)
+
+**Answer Challenge Questions**:
+1. "Lines start overloading around 48°C with low wind"
+2. "The 69kV lines in coastal areas show stress first"
+3. "We provide a real-time severity score plus visual indicators"
+
+**Impact**:
+"This lets AEP operators:
+- See problems hours before they happen
+- Take preventive action (shed load, reconfigure)
+- Avoid costly equipment damage and outages"
+
+"All powered by open-source tools, real weather data, and industry-standard IEEE-738 calculations."
+
+---
+
+## 🔮 Future Enhancements
+
+### Phase 2 Features (Post-Hackathon)
+- [ ] **N-1 Contingency Analysis**: Show impact of losing any line
+- [ ] **Load Profiles**: Account for daily demand changes
+- [ ] **Mobile App**: Native iOS/Android with push notifications
+- [ ] **Historical Tracking**: Database to store alerts and analyze patterns
+- [ ] **Machine Learning**: Predict failures based on historical weather/loading
+- [ ] **Integration**: Connect to SCADA systems for real power flows
+- [ ] **Multi-Region**: Scale to handle AEP's full 40,000-mile network
+
+### Technical Improvements
+- [ ] WebSocket for real-time updates (no page refresh)
+- [ ] Background scheduler for automatic alert checks
+- [ ] Redis caching for faster API responses
+- [ ] Docker containerization for easy deployment
+- [ ] User authentication and role-based access
+- [ ] Export reports to PDF/Excel
+
+---
+
+## 🐛 Troubleshooting
+
+### "Weather service not configured"
+- Check `.env` file exists with `OPENWEATHER_API_KEY`
+- Verify API key is valid at openweathermap.org
+- Test: `curl "api.openweathermap.org/data/2.5/weather?lat=21.3&lon=-157.8&appid=YOUR_KEY"`
+
+### "No data loading on dashboard"
+- Check backend server is running (`python app.py`)
+- Check browser console (F12) for CORS errors
+- Verify frontend API_BASE URL matches backend port
+
+### "SMS not sending"
+- Ensure Twilio credentials in `.env` are correct
+- Verify phone numbers include country code (+1 for US)
+- Check Twilio console for error logs
+- Alternative: Use free email-to-SMS gateways (see notifications.py)
+
+### "Map not displaying"
+- Check `oneline_lines.geojson` exists in `backend/data/`
+- Verify GeoJSON is valid JSON (use jsonlint.com)
+- Check browser console for Leaflet errors
+
+### "Calculations taking too long"
+- Normal: 40 lines × 0.5 sec = ~20 seconds for full forecast
+- Reduce forecast hours: Change `hours=24` to `hours=12`
+- Cache results: Already implemented (30 min TTL)
+
+---
+
+## 👥 Team & Credits
+
+**Team Members**:
+- [Your Names]
+
+**Built With**:
+- IEEE-738 library (provided by AEP)
+- OpenWeatherMap API
+- OpenStreetMap / Leaflet.js
+- Chart.js
+- Bootstrap
+
+**Special Thanks**:
+- AEP for the challenge and data
+- OSU Hackathon organizers
+- IEEE for transmission line standards
+
+---
+
+## 📜 License
+
+MIT License - feel free to use and modify for your needs.
+
+---
+
+## 📞 Contact
+
+For questions or demo requests:
+- Email: [your-email]
+- GitHub: [your-repo]
+- Demo Video: [youtube-link]
+
+---
+
+**LineLink** - Keeping the grid safe, one line at a time ⚡
