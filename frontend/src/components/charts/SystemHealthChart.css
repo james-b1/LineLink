@@ -1,0 +1,154 @@
+.health-chart-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.total-lines {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-normal);
+}
+
+.health-chart-container {
+  position: relative;
+  margin-bottom: var(--space-6);
+}
+
+.chart-center-metric {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.center-value {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.center-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.health-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.health-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stat-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.stat-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.stat-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.stat-count {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.stat-percent {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.health-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.metric-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.metric-value {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+}
+
+.custom-tooltip {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-lg);
+}
+
+.tooltip-title {
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.tooltip-value {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.tooltip-description {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* Recharts label styling */
+.recharts-pie-label-text {
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--text-inverse);
+}
+
+@media (max-width: 768px) {
+  .health-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .center-value {
+    font-size: var(--text-2xl);
+  }
+}
