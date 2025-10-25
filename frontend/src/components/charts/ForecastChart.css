@@ -1,11 +1,18 @@
+/**
+ * Chart & Forecast Component Styles
+ * Applied Scarlet & Deep Grey Theme
+ */
+
 .forecast-chart-card {
   grid-column: 1 / -1;
 }
 
+/* --- Custom Legend --- */
 .chart-legend-custom {
   display: flex;
   gap: var(--space-4);
   flex-wrap: wrap;
+  padding-left: var(--space-2);
 }
 
 .legend-item {
@@ -19,21 +26,24 @@
 .legend-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
 
+/* --- Custom Tooltip (The most important part of data display) --- */
 .custom-tooltip {
   background-color: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg); /* Softer corners */
+  padding: var(--space-4);
+  box-shadow: var(--shadow-md); /* Clear, professional shadow */
+  pointer-events: none;
 }
 
 .tooltip-time {
   font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
+  font-weight: var(--font-bold);
+  color: var(--primary-red); /* Highlight time with primary scarlet */
   margin-bottom: var(--space-2);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--border-light);
@@ -53,13 +63,15 @@
 
 .tooltip-value {
   font-weight: var(--font-semibold);
+  color: var(--text-primary);
 }
 
+/* --- Forecast Summary Statistics --- */
 .forecast-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-6);
+  gap: var(--space-6);
+  margin-top: var(--space-8);
   padding-top: var(--space-6);
   border-top: 1px solid var(--border-light);
 }
@@ -73,15 +85,18 @@
 .stat-label {
   font-size: var(--text-sm);
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl); /* Increased size for visual impact */
   font-weight: var(--font-bold);
   color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
 
-/* Recharts customization */
+/* --- Recharts Overrides --- */
 .recharts-wrapper {
   font-family: var(--font-primary);
 }
@@ -94,12 +109,15 @@
   color: var(--text-secondary) !important;
 }
 
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
   .chart-legend-custom {
     font-size: var(--text-xs);
+    justify-content: center;
   }
 
   .forecast-summary {
     grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 }

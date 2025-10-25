@@ -1,13 +1,8 @@
-/**
- * LineLink Global Styles
- * Red & Gray Professional Theme
- */
-
-@import './styles/variables.css';
-@import './styles/components.css';
+@import "./styles/variables.css";
+@import "./styles/components.css";
 
 /* Import Inter font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 /* ===== CSS Reset & Base Styles ===== */
 *,
@@ -130,6 +125,53 @@ pre code {
   background-color: transparent;
   padding: 0;
   color: inherit;
+}
+
+/* ===== Logo and Animation Styles ===== */
+
+.logo {
+  height: 6em;
+  padding: var(--space-6);
+  will-change: filter;
+  transition: filter var(--transition-base);
+}
+
+/* Updated default logo hover to use Scarlet */
+.logo:hover {
+  filter: drop-shadow(0 0 2em var(--primary-red-hover));
+}
+
+/* Updated React-specific logo hover to use Primary Scarlet */
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em var(--primary-red));
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* ===== Global Component Overrides and Utilities ===== */
+
+/* If .card is used globally, harmonize its padding */
+.card {
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+}
+
+/* Updated documentation link text to use tertiary grey */
+.read-the-docs {
+  color: var(--text-tertiary);
 }
 
 /* ===== Scrollbar Styling ===== */

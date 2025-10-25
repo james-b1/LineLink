@@ -1,21 +1,28 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-8); /* Using standardized space variable */
   text-align: center;
+  font-family: var(--font-primary); /* Ensuring Inter font is used */
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
 .logo {
   height: 6em;
-  padding: 1.5em;
+  padding: var(--space-6); /* Using standardized space variable */
   will-change: filter;
-  transition: filter 300ms;
+  transition: filter var(--transition-base);
 }
+
+/* Updated default logo hover to use Scarlet */
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em var(--primary-red-hover));
 }
+
+/* Updated React-specific logo hover to use Primary Scarlet */
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em var(--primary-red));
 }
 
 @keyframes logo-spin {
@@ -33,10 +40,13 @@
   }
 }
 
+/* If .card is used globally, harmonize its padding */
 .card {
-  padding: 2em;
+  padding: var(--space-8); /* Using standardized space variable */
+  border-radius: var(--radius-lg);
 }
 
+/* Updated documentation link text to use tertiary grey */
 .read-the-docs {
-  color: #888;
+  color: var(--text-tertiary);
 }

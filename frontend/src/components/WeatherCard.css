@@ -5,74 +5,80 @@
 .weather-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  gap: 1rem; /* space-4 */
+  margin-bottom: 1.5rem; /* space-6 */
 }
 
 .weather-metric {
   display: flex;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  gap: 0.75rem; /* space-3 */
+  padding: 1rem; /* space-4 */
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-subtle); /* Initial subtle shadow */
 }
 
 .weather-metric:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px); /* Slightly more lift */
+  /* A more pronounced, modern shadow on hover */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.06);
 }
 
 .metric-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 52px; /* Slightly larger icon */
+  height: 52px;
+  border-radius: var(--radius-lg);
   flex-shrink: 0;
+  font-size: 1.5rem;
 }
 
+/* Updated Icon Colors for Scarlet/Grey Theme */
 .temperature-icon {
-  background-color: #FEF3C7;
-  color: #F59E0B;
+  background-color: var(--color-scarlet-200); /* Light Scarlet background */
+  color: var(--color-scarlet-700); /* Deep Scarlet icon */
 }
 
 .wind-icon {
-  background-color: #DBEAFE;
-  color: #3B82F6;
+  background-color: var(--color-grey-200); /* Light Grey background */
+  color: var(--color-grey-900); /* Deep Charcoal icon */
 }
 
 .conditions-icon {
-  background-color: var(--gray-200);
-  color: var(--gray-600);
+  background-color: var(--color-grey-50); /* Subtle Background */
+  color: var(--color-grey-600); /* Secondary Grey icon */
 }
 
 .metric-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--space-1);
+  gap: 0.25rem; /* space-1 */
 }
 
 .metric-label {
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-tertiary);
+  color: var(--color-grey-600); /* Secondary Grey */
 }
 
 .metric-value {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
-  line-height: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-grey-900); /* Primary Deep Charcoal */
+  line-height: 1.2;
 }
 
 .metric-secondary {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  font-size: 0.75rem; /* text-xs */
+  color: var(--color-grey-600); /* Secondary Grey */
 }
 
 .weather-conditions {
@@ -80,50 +86,58 @@
 }
 
 .conditions-value {
-  font-size: var(--text-xl);
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;
   text-transform: capitalize;
+  color: var(--color-grey-900);
 }
 
+/* Impact/Alert Section */
 .weather-impact {
-  padding: var(--space-4);
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  border-left: 3px solid var(--gray-400);
+  padding: 1rem; /* space-4 */
+  background-color: var(--color-grey-50); /* Subtle light grey background */
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-scarlet-700); /* Accent with Deep Scarlet */
 }
 
 .impact-label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-2);
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: var(--color-grey-900); /* Primary text */
+  margin-bottom: 0.5rem; /* space-2 */
 }
 
 .impact-indicator {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.5rem; /* space-2 */
 }
 
+/* Use Status Colors with a transparent background for a modern 'pill' look */
 .impact-warning {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  background-color: var(--status-warning-light);
-  color: #92400E;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  padding: 0.5rem 0.75rem; /* space-2, space-3 */
+  /* Using opacity on the status color for a light background pill */
+  background-color: rgba(243, 156, 18, 0.15); /* F39C12 with opacity */
+  color: var(
+    --color-status-warning
+  ); /* Use the main status color for the text */
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
 }
 
 .impact-ok {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  background-color: var(--status-ok-light);
-  color: #065F46;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  padding: 0.5rem 0.75rem; /* space-2, space-3 */
+  /* Using opacity on the status color for a light background pill */
+  background-color: rgba(39, 174, 96, 0.15); /* 27AE60 with opacity */
+  color: var(--color-status-ok); /* Use the main status color for the text */
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {

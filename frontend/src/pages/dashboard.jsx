@@ -1,12 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
-import { AlertCircle } from 'lucide-react';
-import api from '../api/api.js';
-import Header from '../components/layout/Header';
-import WeatherCard from '../components/WeatherCard';
-import SystemHealthChart from '../components/charts/SystemHealthChart';
-import ForecastChart from '../components/charts/ForecastChart';
-import LineTable from '../components/LineTable';
-import './Dashboard.css';
+import { useEffect, useState, useCallback } from "react";
+import { AlertCircle } from "lucide-react";
+import api from "../api/api.js";
+import Header from "../components/layout/Header";
+import WeatherCard from "../components/WeatherCard";
+import SystemHealthChart from "../components/charts/SystemHealthChart";
+import ForecastChart from "../components/charts/ForecastChart";
+import LineTable from "../components/LineTable";
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const [currentData, setCurrentData] = useState(null);
@@ -19,45 +19,45 @@ const Dashboard = () => {
   // Fetch current conditions
   const fetchCurrentConditions = useCallback(async () => {
     try {
-      const response = await api.get('/current-conditions');
+      const response = await api.get("/current-conditions");
       setCurrentData(response.data);
       setError(null);
     } catch (err) {
-      console.error('Error fetching current conditions:', err);
-      setError('Failed to fetch current conditions');
+      console.error("Error fetching current conditions:", err);
+      setError("Failed to fetch current conditions");
     }
   }, []);
 
   // Fetch forecast data
   const fetchForecast = useCallback(async () => {
     try {
-      const response = await api.get('/forecast');
+      const response = await api.get("/forecast");
       setForecastData(response.data);
     } catch (err) {
-      console.error('Error fetching forecast:', err);
+      console.error("Error fetching forecast:", err);
       // Don't set error here since current conditions is more critical
     }
   }, []);
 
   // Fetch all data
-  const fetchAllData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+  const fetchAllData = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
-    try {
-      await Promise.all([
-        fetchCurrentConditions(),
-        fetchForecast()
-      ]);
-      setLastUpdated(new Date());
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [fetchCurrentConditions, fetchForecast]);
+      try {
+        await Promise.all([fetchCurrentConditions(), fetchForecast()]);
+        setLastUpdated(new Date());
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [fetchCurrentConditions, fetchForecast]
+  );
 
   // Initial data fetch
   useEffect(() => {
@@ -81,7 +81,7 @@ const Dashboard = () => {
   // Get critical lines (loading >= 95%)
   const getCriticalLines = () => {
     if (!currentData?.lines) return [];
-    return currentData.lines.filter(line => line.loading_pct >= 95);
+    return currentData.lines.filter((line) => line.loading_pct >= 95);
   };
 
   const criticalLines = getCriticalLines();
@@ -145,7 +145,10 @@ const Dashboard = () => {
           <div className="card critical-alert">
             <div className="card-header">
               <h3 className="card-title">
-                <AlertCircle size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <AlertCircle
+                  size={20}
+                  style={{ marginRight: "8px", verticalAlign: "middle" }}
+                />
                 Critical Lines Alert
               </h3>
               <span className="alert-count">{criticalLines.length}</span>

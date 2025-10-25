@@ -1,18 +1,27 @@
+/**
+ * Health Chart Component Styles
+ * Applied Scarlet & Deep Grey Theme
+ */
+
 .health-chart-card {
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* Assumes 'card' class is also applied for border/shadow */
 }
 
 .total-lines {
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  font-weight: var(--font-normal);
+  font-weight: var(
+    --font-medium
+  ); /* Slightly increased weight for readability */
 }
 
 .health-chart-container {
   position: relative;
   margin-bottom: var(--space-6);
+  flex-grow: 1; /* Allows the chart container to fill space */
 }
 
 .chart-center-metric {
@@ -25,22 +34,23 @@
 }
 
 .center-value {
-  font-size: var(--text-3xl);
+  font-size: var(--text-4xl); /* Increased size for impact */
   font-weight: var(--font-bold);
-  color: var(--text-primary);
+  color: var(--primary-red); /* Highlight the main metric with Scarlet */
   line-height: 1;
 }
 
 .center-label {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--text-secondary);
   margin-top: var(--space-1);
 }
 
+/* --- Health Stats Grid --- */
 .health-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-6); /* Slightly more space */
   margin-bottom: var(--space-6);
   padding-bottom: var(--space-6);
   border-bottom: 1px solid var(--border-light);
@@ -61,12 +71,13 @@
 .stat-indicator {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
+  /* Color assigned dynamically via status classes */
 }
 
 .stat-name {
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   color: var(--text-secondary);
 }
 
@@ -77,7 +88,7 @@
 }
 
 .stat-count {
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl); /* Emphasized count */
   font-weight: var(--font-bold);
   color: var(--text-primary);
 }
@@ -85,8 +96,10 @@
 .stat-percent {
   font-size: var(--text-sm);
   color: var(--text-tertiary);
+  font-weight: var(--font-medium);
 }
 
+/* --- Health Metrics List --- */
 .health-metrics {
   display: flex;
   flex-direction: column;
@@ -97,9 +110,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-2);
+  padding: var(--space-3) var(--space-4); /* Added horizontal padding */
   background-color: var(--bg-secondary);
   border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.metric-item:hover {
+  background-color: var(--gray-100);
 }
 
 .metric-label {
@@ -109,19 +127,24 @@
 
 .metric-value {
   font-size: var(--text-base);
-  font-weight: var(--font-semibold);
+  font-weight: var(--font-bold); /* Bolded for clarity */
+  color: var(--text-primary);
 }
 
+/* --- Custom Tooltip (Harmonized with chart_styles.css) --- */
 .custom-tooltip {
   background-color: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
 }
 
 .tooltip-title {
-  font-weight: var(--font-semibold);
+  font-weight: var(--font-bold);
+  font-size: var(--text-base);
+  color: var(--primary-red);
   margin-bottom: var(--space-1);
 }
 
@@ -138,17 +161,18 @@
 
 /* Recharts label styling */
 .recharts-pie-label-text {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px; /* Slightly larger for better readability */
+  font-weight: var(--font-semibold);
   fill: var(--text-inverse);
 }
 
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
   .health-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .center-value {
-    font-size: var(--text-2xl);
+    font-size: var(--text-3xl);
   }
 }
