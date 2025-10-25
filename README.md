@@ -15,7 +15,7 @@ The electrical grid is at risk of being pushed past its limits as weather condit
 3. Overall system stress severity
 
 ### Our Solution
-GridGuard is a web-based dashboard that:
+LineLink is a web-based dashboard that:
 - **Fetches live weather data** from OpenWeatherMap API
 - **Calculates dynamic line ratings** using IEEE-738 standard
 - **Predicts 24-hour ahead** line loading conditions
