@@ -1,13 +1,14 @@
-import { RefreshCw, Activity } from 'lucide-react';
-import PropTypes from 'prop-types';
-import './Header.css';
+import { RefreshCw } from "lucide-react";
+import PropTypes from "prop-types";
+import "./Header.css";
+import logo from "../../assets/logo.png";
 
 const Header = ({ onRefresh, refreshing, lastUpdated, systemStatus }) => {
   const formatTime = (date) => {
-    if (!date) return '--:--';
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
+    if (!date) return "--:--";
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -17,7 +18,7 @@ const Header = ({ onRefresh, refreshing, lastUpdated, systemStatus }) => {
         <div className="header-content">
           {/* Logo/Brand */}
           <div className="header-brand">
-            <Activity className="header-logo" size={32} strokeWidth={2.5} />
+            <img src={logo} alt="LineLink Logo" className="header-logo" />
             <h1 className="header-title">LineLink</h1>
           </div>
 
@@ -25,10 +26,14 @@ const Header = ({ onRefresh, refreshing, lastUpdated, systemStatus }) => {
           <div className="header-actions">
             {/* System Status */}
             <div className="header-status">
-              <div className={`status-indicator ${systemStatus?.healthy ? 'status-healthy' : 'status-error'}`}>
+              <div
+                className={`status-indicator ${
+                  systemStatus?.healthy ? "status-healthy" : "status-error"
+                }`}
+              >
                 <span className="status-dot"></span>
                 <span className="status-text">
-                  {systemStatus?.healthy ? 'Connected' : 'Disconnected'}
+                  {systemStatus?.healthy ? "Connected" : "Disconnected"}
                 </span>
               </div>
               {lastUpdated && (
@@ -45,10 +50,7 @@ const Header = ({ onRefresh, refreshing, lastUpdated, systemStatus }) => {
               className="btn btn-secondary refresh-btn"
               aria-label="Refresh data"
             >
-              <RefreshCw
-                size={18}
-                className={refreshing ? 'spinning' : ''}
-              />
+              <RefreshCw size={18} className={refreshing ? "spinning" : ""} />
               <span className="refresh-text">Refresh</span>
             </button>
           </div>
@@ -63,14 +65,14 @@ Header.propTypes = {
   refreshing: PropTypes.bool,
   lastUpdated: PropTypes.instanceOf(Date),
   systemStatus: PropTypes.shape({
-    healthy: PropTypes.bool
-  })
+    healthy: PropTypes.bool,
+  }),
 };
 
 Header.defaultProps = {
   refreshing: false,
   lastUpdated: null,
-  systemStatus: { healthy: true }
+  systemStatus: { healthy: true },
 };
 
 export default Header;

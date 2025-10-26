@@ -22,7 +22,9 @@
 }
 
 .header-logo {
-  color: var(--primary-red);
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .header-title {
@@ -96,7 +98,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
