@@ -1,28 +1,36 @@
+/**
+ * Weather Card Component Styles
+ * Consolidated Metrics and Reordered Impact Section
+ */
+
 .weather-card {
   height: 100%;
 }
 
+/* --- Metric Grid (Now consolidated for 3 items on one row) --- */
 .weather-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex; /* Use flex to force metrics onto one line */
   gap: 1rem; /* space-4 */
   margin-bottom: 1.5rem; /* space-6 */
+  margin-top: 1rem; /* Added top margin to separate from the impact section */
 }
 
 .weather-metric {
   display: flex;
-  gap: 0.75rem; /* space-3 */
-  padding: 1rem; /* space-4 */
+  gap: 0.5rem; /* Reduced gap slightly for compactness */
+  padding: 0.75rem; /* space-3 - Reduced padding for compactness */
+  width: calc(
+    33.33% - 0.67rem
+  ); /* Calculation to fit 3 items with 1rem (0.67rem per side gap) spacing */
   background-color: var(--color-white);
   border-radius: var(--radius-lg);
   transition: transform var(--transition-fast),
     box-shadow var(--transition-fast);
-  box-shadow: var(--shadow-subtle); /* Initial subtle shadow */
+  box-shadow: var(--shadow-subtle);
 }
 
 .weather-metric:hover {
-  transform: translateY(-3px); /* Slightly more lift */
-  /* A more pronounced, modern shadow on hover */
+  transform: translateY(-3px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.06);
 }
@@ -31,27 +39,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px; /* Slightly larger icon */
-  height: 52px;
+  width: 40px; /* Reduced icon size for compactness */
+  height: 40px;
   border-radius: var(--radius-lg);
   flex-shrink: 0;
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced font size */
 }
 
 /* Updated Icon Colors for Scarlet/Grey Theme */
 .temperature-icon {
-  background-color: var(--color-scarlet-200); /* Light Scarlet background */
-  color: var(--color-scarlet-700); /* Deep Scarlet icon */
+  background-color: var(--color-scarlet-200);
+  color: var(--color-scarlet-700);
 }
 
 .wind-icon {
-  background-color: var(--color-grey-200); /* Light Grey background */
-  color: var(--color-grey-900); /* Deep Charcoal icon */
+  background-color: var(--color-grey-200);
+  color: var(--color-grey-900);
 }
 
 .conditions-icon {
-  background-color: var(--color-grey-50); /* Subtle Background */
-  color: var(--color-grey-600); /* Secondary Grey icon */
+  background-color: var(--color-grey-50);
+  color: var(--color-grey-600);
 }
 
 .metric-content {
@@ -62,48 +70,49 @@
 }
 
 .metric-label {
-  font-size: 0.75rem; /* text-xs */
+  font-size: 0.625rem; /* Smaller text-xs for compactness */
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-grey-600); /* Secondary Grey */
+  color: var(--color-grey-600);
 }
 
 .metric-value {
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced size for compactness */
   font-weight: 700;
-  color: var(--color-grey-900); /* Primary Deep Charcoal */
+  color: var(--color-grey-900);
   line-height: 1.2;
 }
 
 .metric-secondary {
-  font-size: 0.75rem; /* text-xs */
-  color: var(--color-grey-600); /* Secondary Grey */
+  font-size: 0.625rem; /* Smaller text-xs for compactness */
+  color: var(--color-grey-600);
 }
 
+/* This is no longer needed as a separate row item, it's a metric */
 .weather-conditions {
-  grid-column: 1 / -1;
+  /* Removed grid-column span */
 }
 
 .conditions-value {
-  font-size: 1.25rem; /* text-xl */
+  font-size: 1rem; /* Reduced size for metric card */
   font-weight: 600;
   text-transform: capitalize;
   color: var(--color-grey-900);
 }
 
-/* Impact/Alert Section */
+/* --- Impact/Alert Section (No change in styling, order is handled by HTML) --- */
 .weather-impact {
   padding: 1rem; /* space-4 */
-  background-color: var(--color-grey-50); /* Subtle light grey background */
+  background-color: var(--color-grey-50);
   border-radius: var(--radius-lg);
-  border-left: 4px solid var(--color-scarlet-700); /* Accent with Deep Scarlet */
+  border-left: 4px solid var(--color-scarlet-700);
 }
 
 .impact-label {
   font-size: 0.875rem; /* text-sm */
   font-weight: 500;
-  color: var(--color-grey-900); /* Primary text */
+  color: var(--color-grey-900);
   margin-bottom: 0.5rem; /* space-2 */
 }
 
@@ -113,36 +122,36 @@
   gap: 0.5rem; /* space-2 */
 }
 
-/* Use Status Colors with a transparent background for a modern 'pill' look */
 .impact-warning {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 0.75rem; /* space-2, space-3 */
-  /* Using opacity on the status color for a light background pill */
-  background-color: rgba(243, 156, 18, 0.15); /* F39C12 with opacity */
-  color: var(
-    --color-status-warning
-  ); /* Use the main status color for the text */
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(243, 156, 18, 0.15);
+  color: var(--color-status-warning);
   border-radius: var(--radius-lg);
-  font-size: 0.875rem; /* text-sm */
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
 .impact-ok {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 0.75rem; /* space-2, space-3 */
-  /* Using opacity on the status color for a light background pill */
-  background-color: rgba(39, 174, 96, 0.15); /* 27AE60 with opacity */
-  color: var(--color-status-ok); /* Use the main status color for the text */
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(39, 174, 96, 0.15);
+  color: var(--color-status-ok);
   border-radius: var(--radius-lg);
-  font-size: 0.875rem; /* text-sm */
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
   .weather-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column; /* Stack metrics vertically on mobile */
+  }
+
+  .weather-metric {
+    width: 100%; /* Full width when stacked */
   }
 
   .weather-conditions {
