@@ -546,6 +546,84 @@ with get_db() as db:
 - Graceful degradation if services unavailable
 - Free alternative (email-to-SMS gateways)
 
+### Interactive Map Generation (map.py)
+
+The `backend/map.py` script generates an interactive HTML visualization of the transmission grid with color-coded stress levels. This standalone tool produces a Folium-based map saved to `backend/data/line_map.html`.
+
+**Key Features:**
+- **IEEE-738 Scenario Analysis**: Calculates line ratings under custom weather conditions
+- **Color-Coded Visualization**:
+  - 🟢 Green: NOMINAL loading (<60%)
+  - 🟠 Orange: CAUTION loading (60-90%)
+  - 🔴 Red: CRITICAL loading (≥90%)
+- **Interactive Elements**:
+  - Line tooltips showing name and loading percentage
+  - Bus markers with voltage class indicators
+  - Marker clustering for cleaner visualization
+- **GIS Integration**: Merges calculated data with GeoJSON geometry
+
+**Process Flow:**
+
+1. **Data Loading** (lines 7-9):
+   - Loads transmission lines, flows, buses from CSV files
+   - Merges voltage data from bus endpoints to each line
+
+2. **IEEE-738 Calculations** (lines 30-87):
+   - Reads conductor properties from library
+   - Computes thermal ratings using ambient weather parameters
+   - Converts ratings from Amps to MVA: `MVA = √3 × I × V × 10⁻⁶`
+
+3. **Scenario Analysis** (lines 96-121):
+   - `run_scenario()` function tests different weather conditions
+   - Assigns severity labels based on configurable thresholds
+   - Saves results to `scenario_results.csv`
+
+4. **GIS Data Preparation** (lines 125-183):
+   - Merges calculated loading data with line geometry from GeoJSON
+   - Deduplicates and clusters bus locations
+   - Projects coordinates to local CRS for spatial operations
+
+5. **Map Visualization** (lines 186-221):
+   - Creates Folium map centered on Hawaii (20.9°N, -157.5°W)
+   - Renders lines with color based on severity
+   - Adds bus markers differentiated by voltage class (69kV vs other)
+   - Saves interactive HTML to `backend/data/line_map.html`
+
+**Usage Example:**
+
+```python
+# Run a hot weather scenario
+hot_day = {
+    'Ta': 45,              # 45°C ambient
+    'WindVelocity': 2.0,   # Low wind (2 ft/s)
+    'SunTime': 14,         # 2 PM (peak solar)
+    'Date': '21 Jun',      # Summer
+    # ... other parameters
+}
+
+results = run_scenario(base_data, hot_day, thresholds=(90, 60))
+# Returns DataFrame with loading_pct and severity for each line
+
+# Generate map (automatic at end of script)
+# Opens backend/data/line_map.html to view
+```
+
+**Customization:**
+
+- **Thresholds**: Adjust `thresholds=(critical, caution)` tuple in `run_scenario()`
+- **Weather**: Modify `ambient_defaults` dict (lines 44-56)
+- **Map Style**: Change Folium `tiles` parameter (line 189)
+- **Bus Voltage Colors**: Edit line 214 conditional
+
+**Output:**
+
+The generated `line_map.html` is a standalone interactive map that can be:
+- Opened directly in a browser for offline viewing
+- Embedded in web applications via iframe
+- Served through the Flask API as a dynamic visualization
+
+This tool complements the real-time dashboard by providing scenario planning capabilities for grid operators to test "what-if" conditions before they occur.
+
 ---
 
 ## 🎓 How It Works

@@ -358,6 +358,47 @@ def get_lines_geojson():
         }), 500
 
 
+@app.route('/api/geojson/buses')
+def get_buses_geojson():
+    """Get bus locations as GeoJSON"""
+    try:
+        import pandas as pd
+        import json
+
+        # Load buses data
+        buses = pd.read_csv('./data/buses.csv')
+
+        # Create GeoJSON features
+        features = []
+        for _, bus in buses.iterrows():
+            if pd.notna(bus['x']) and pd.notna(bus['y']):
+                feature = {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [float(bus['x']), float(bus['y'])]
+                    },
+                    'properties': {
+                        'name': bus['BusName'],
+                        'voltage_kv': int(bus['v_nom']) if pd.notna(bus['v_nom']) else 0
+                    }
+                }
+                features.append(feature)
+
+        geojson_data = {
+            'type': 'FeatureCollection',
+            'features': features
+        }
+
+        return jsonify(geojson_data)
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @app.route('/api/test-notifications', methods=['POST'])
 def test_notifications():
     """Test notification system"""
