@@ -113,13 +113,19 @@
   font-size: 0.875rem; /* text-sm */
   font-weight: 500;
   color: var(--color-grey-900);
-  margin-bottom: 0.5rem; /* space-2 */
+  margin-bottom: 0; /* remove bottom margin so it can sit inline */
 }
 
-.impact-indicator {
+.impact-row {
   display: flex;
+  align-items: center;
+  gap: 0.75rem; /* small gap between label and inline indicator */
+}
+
+.impact-indicator-inline {
+  display: flex;
+  gap: 0.5rem;
   flex-wrap: wrap;
-  gap: 0.5rem; /* space-2 */
 }
 
 .impact-warning {

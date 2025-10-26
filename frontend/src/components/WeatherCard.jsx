@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import { Thermometer, Wind, CloudRain } from 'lucide-react';
-import MapView from './MapView';
-import './WeatherCard.css';
+import PropTypes from "prop-types";
+import { Thermometer, Wind, CloudRain } from "lucide-react";
+import MapView from "./MapView";
+import "./WeatherCard.css";
 
 const WeatherCard = ({ weather }) => {
   if (!weather) {
@@ -24,7 +24,7 @@ const WeatherCard = ({ weather }) => {
   return (
     <div className="card weather-card">
       <div className="card-header">
-        <h3 className="card-title">Current Weather</h3>
+        <h3 className="card-title">Current Status</h3>
       </div>
       <div className="card-body">
         <div className="weather-grid">
@@ -39,7 +39,7 @@ const WeatherCard = ({ weather }) => {
                 {weather.temperature.toFixed(1)}°C
               </div>
               <div className="metric-secondary">
-                {((weather.temperature * 9/5) + 32).toFixed(1)}°F
+                {((weather.temperature * 9) / 5 + 32).toFixed(1)}°F
               </div>
             </div>
           </div>
@@ -51,9 +51,7 @@ const WeatherCard = ({ weather }) => {
             </div>
             <div className="metric-content">
               <div className="metric-label">Wind Speed</div>
-              <div className="metric-value wind-value">
-                {windSpeedMs} m/s
-              </div>
+              <div className="metric-value wind-value">{windSpeedMs} m/s</div>
               <div className="metric-secondary">
                 {windSpeedMph} mph | {weather.wind_speed.toFixed(1)} ft/s
               </div>
@@ -68,31 +66,30 @@ const WeatherCard = ({ weather }) => {
             <div className="metric-content">
               <div className="metric-label">Conditions</div>
               <div className="metric-value conditions-value">
-                {weather.description.charAt(0).toUpperCase() + weather.description.slice(1)}
+                {weather.description.charAt(0).toUpperCase() +
+                  weather.description.slice(1)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Weather Impact Indicator */}
+        {/* Weather Impact Indicator (now inline to save vertical space) */}
         <div className="weather-impact">
-          <div className="impact-label">Impact on Line Capacity:</div>
-          <div className="impact-indicator">
-            {weather.temperature > 35 && (
-              <span className="impact-warning">
-                High temperature reduces capacity
-              </span>
-            )}
-            {weather.wind_speed < 4.92 && ( // < 1.5 m/s
-              <span className="impact-warning">
-                Low wind reduces cooling
-              </span>
-            )}
-            {weather.temperature <= 35 && weather.wind_speed >= 4.92 && (
-              <span className="impact-ok">
-                Favorable conditions
-              </span>
-            )}
+          <div className="impact-row">
+            <div className="impact-label">Impact on Line Capacity:</div>
+            <div className="impact-indicator-inline">
+              {weather.temperature > 35 && (
+                <span className="impact-warning">
+                  High temperature reduces capacity
+                </span>
+              )}
+              {weather.wind_speed < 4.92 && ( // < 1.5 m/s
+                <span className="impact-warning">Low wind reduces cooling</span>
+              )}
+              {weather.temperature <= 35 && weather.wind_speed >= 4.92 && (
+                <span className="impact-ok">Favorable conditions</span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -112,8 +109,8 @@ WeatherCard.propTypes = {
   weather: PropTypes.shape({
     temperature: PropTypes.number.isRequired,
     wind_speed: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired
-  })
+    description: PropTypes.string.isRequired,
+  }),
 };
 
 export default WeatherCard;
