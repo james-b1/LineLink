@@ -123,10 +123,6 @@ const SystemHealthChart = ({ healthData }) => {
         <div className="health-stats-grid">
           <div className="health-stat">
             <div className="stat-header">
-              <span
-                className="stat-indicator"
-                style={{ backgroundColor: "var(--primary-red)" }}
-              ></span>
               <span className="stat-name">Average Loading</span>
             </div>
             <div className="stat-value-row">
@@ -138,10 +134,12 @@ const SystemHealthChart = ({ healthData }) => {
           {data.map((item, index) => (
             <div key={index} className="health-stat">
               <div className="stat-header">
-                <span
-                  className="stat-indicator"
-                  style={{ backgroundColor: item.color }}
-                ></span>
+                {item.name !== "Normal" && (
+                  <span
+                    className="stat-indicator"
+                    style={{ backgroundColor: item.color }}
+                  ></span>
+                )}
                 <span className="stat-name">{item.name}</span>
               </div>
               <div className="stat-value-row">
