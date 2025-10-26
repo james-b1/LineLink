@@ -86,6 +86,14 @@ const Dashboard = () => {
 
   const criticalLines = getCriticalLines();
 
+  // Create system status with healthy flag for Header
+  const systemStatus = currentData?.system_health ? {
+    ...currentData.system_health,
+    healthy: true
+  } : {
+    healthy: false
+  };
+
   // Loading state
   if (loading && !currentData) {
     return (
@@ -136,7 +144,7 @@ const Dashboard = () => {
         onRefresh={handleRefresh}
         refreshing={refreshing}
         lastUpdated={lastUpdated}
-        systemStatus={currentData?.system_health}
+        systemStatus={systemStatus}
       />
 
       <main className="dashboard-container">
