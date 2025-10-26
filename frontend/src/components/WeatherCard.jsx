@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Thermometer, Wind, CloudRain } from 'lucide-react';
+import MapView from './MapView';
 import './WeatherCard.css';
 
 const WeatherCard = ({ weather }) => {
@@ -93,6 +94,14 @@ const WeatherCard = ({ weather }) => {
               </span>
             )}
           </div>
+        </div>
+
+        {/* Transmission Network Map */}
+        <div className="weather-map-section">
+          <div className="map-section-header">
+            <h4 className="map-section-title">Transmission Network Status</h4>
+          </div>
+          <MapView />
         </div>
       </div>
     </div>

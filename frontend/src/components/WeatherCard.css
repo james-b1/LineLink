@@ -158,3 +158,19 @@
     grid-column: 1;
   }
 }
+
+/* --- Map Section --- */
+.weather-map-section {
+  margin-top: 1.5rem;
+}
+
+.map-section-header {
+  margin-bottom: 0.75rem;
+}
+
+.map-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
