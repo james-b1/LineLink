@@ -112,7 +112,7 @@ def run_scenario(lines_flows_df, ambient, thresholds=(90, 60)):
     return df.sort_values("loading_pct", ascending=False)
 
 # Example: hot & low wind @ 2pm (SunTime=14)
-hot_lowwind = dict(ambient_defaults, Ta=70, WindVelocity=2, SunTime=12)
+hot_lowwind = dict(ambient_defaults, Ta=43, WindVelocity=2, SunTime=12)
 out = run_scenario(base, hot_lowwind)
 
 # Select key columns and save

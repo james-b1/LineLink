@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import PropTypes from 'prop-types';
 import api from '../api/api.js';
 import 'leaflet/dist/leaflet.css';
 import './MapView.css';
 
-const MapView = () => {
+const MapView = ({ refreshTrigger }) => {
   const [linesData, setLinesData] = useState(null);
   const [busesData, setBusesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch map data
+  // Fetch map data (refreshes when refreshTrigger changes)
   useEffect(() => {
     const fetchMapData = async () => {
       try {
@@ -31,7 +32,7 @@ const MapView = () => {
     };
 
     fetchMapData();
-  }, []);
+  }, [refreshTrigger]); // Re-fetch when refreshTrigger changes
 
   // Get color based on loading status
   const getLineColor = (loadingPct) => {
@@ -188,6 +189,13 @@ const MapView = () => {
       </div>
     </div>
   );
+};
+
+MapView.propTypes = {
+  refreshTrigger: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.instanceOf(Date)
+  ])
 };
 
 export default MapView;

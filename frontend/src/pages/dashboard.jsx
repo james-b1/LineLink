@@ -179,7 +179,7 @@ const Dashboard = () => {
         {/* Main Dashboard Grid */}
         <div className="dashboard-grid">
           {/* Weather Card */}
-          <WeatherCard weather={currentData?.weather} />
+          <WeatherCard weather={currentData?.weather} lastUpdated={lastUpdated} />
 
           {/* System Health Chart */}
           <SystemHealthChart

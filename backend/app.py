@@ -282,6 +282,121 @@ def send_alerts():
         }), 500
 
 
+@app.route('/api/emergency-coordination', methods=['POST'])
+def send_emergency_coordination():
+    """
+    Generate and send LLM-powered emergency coordination plan for critical lines
+    Uses OpenAI to create intelligent worker coordination sequences
+
+    Accepts optional JSON body for testing scenarios:
+    {
+        "temperature": 45,      // °C (optional, uses current weather if not provided)
+        "wind_speed": 2.0,      // ft/s (optional)
+        "hour": 14              // Hour of day (optional)
+    }
+    """
+    try:
+        from modules.llm_coordinator import LLMCoordinator
+
+        # Initialize LLM coordinator
+        coordinator = LLMCoordinator()
+
+        if not coordinator.is_available():
+            return jsonify({
+                'success': False,
+                'error': 'OpenAI API not configured. Add OPENAI_API_KEY to your .env file.'
+            }), 400
+
+        # Check if this is a test scenario or real conditions
+        data = request.json if request.json else {}
+
+        if data and ('temperature' in data or 'wind_speed' in data):
+            # TEST SCENARIO: Use provided weather parameters
+            weather_params = {
+                'Ta': data.get('temperature', 25),
+                'WindVelocity': data.get('wind_speed', 6.56),
+                'WindAngleDeg': 90,
+                'SunTime': data.get('hour', 12),
+                'Date': data.get('date', datetime.now().strftime("%d %b")),
+                'Emissivity': 0.8,
+                'Absorptivity': 0.8,
+                'Direction': 'EastWest',
+                'Atmosphere': 'Clear',
+                'Elevation': 1000,
+                'Latitude': 21.3099
+            }
+
+            # Create weather dict for LLM context (matching real weather format)
+            weather = {
+                'temperature': data.get('temperature', 25),
+                'wind_speed': data.get('wind_speed', 6.56),
+                'description': data.get('description', 'test scenario conditions')
+            }
+
+            scenario_mode = True
+        else:
+            # PRODUCTION: Use current weather conditions
+            weather = weather_service.get_current_weather()
+            weather_params = weather_service.format_for_ieee738(weather)
+            scenario_mode = False
+
+        # Calculate current line ratings
+        all_lines = calculator.calculate_all_lines(weather_params)
+
+        # Filter critical lines (>=95% loading)
+        critical_lines = all_lines[all_lines['loading_pct'] >= 95]
+
+        if len(critical_lines) == 0:
+            return jsonify({
+                'success': True,
+                'message': 'No critical lines detected. Emergency coordination not required.',
+                'scenario_mode': scenario_mode,
+                'scenario_params': data if scenario_mode else None,
+                'critical_count': 0,
+                'max_loading': all_lines['loading_pct'].max() if len(all_lines) > 0 else 0
+            })
+
+        # Generate coordination plan using LLM
+        coordination_plan = coordinator.generate_coordination_plan(critical_lines, weather)
+
+        if not coordination_plan['success']:
+            return jsonify({
+                'success': False,
+                'error': f"Failed to generate coordination plan: {coordination_plan['error']}"
+            }), 500
+
+        # Send emergency alerts via SMS and email
+        send_result = notifier.send_emergency_coordination_alert(
+            coordination_plan,
+            len(critical_lines)
+        )
+
+        return jsonify({
+            'success': True,
+            'message': f'Emergency coordination alert sent for {len(critical_lines)} critical lines',
+            'scenario_mode': scenario_mode,
+            'scenario_params': data if scenario_mode else None,
+            'critical_lines': critical_lines['line_name'].tolist(),
+            'critical_count': len(critical_lines),
+            'coordination_plan': coordination_plan['plan'],
+            'coordination_steps': coordination_plan['steps'],
+            'sms_sent': send_result['sms_sent'],
+            'email_sent': send_result['email_sent'],
+            'errors': send_result.get('errors', [])
+        })
+
+    except ImportError as e:
+        return jsonify({
+            'success': False,
+            'error': 'OpenAI library not installed. Run: pip install openai'
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @app.route('/api/scenario', methods=['POST'])
 def run_scenario():
     """Run custom scenario with user-defined weather conditions"""

@@ -3,7 +3,7 @@ import { Thermometer, Wind, CloudRain } from "lucide-react";
 import MapView from "./MapView";
 import "./WeatherCard.css";
 
-const WeatherCard = ({ weather }) => {
+const WeatherCard = ({ weather, lastUpdated }) => {
   if (!weather) {
     return (
       <div className="card">
@@ -98,7 +98,7 @@ const WeatherCard = ({ weather }) => {
           <div className="map-section-header">
             <h4 className="map-section-title">Transmission Network Status</h4>
           </div>
-          <MapView />
+          <MapView refreshTrigger={lastUpdated} />
         </div>
       </div>
     </div>
@@ -111,6 +111,7 @@ WeatherCard.propTypes = {
     wind_speed: PropTypes.number.isRequired,
     description: PropTypes.string.isRequired,
   }),
+  lastUpdated: PropTypes.instanceOf(Date)
 };
 
 export default WeatherCard;
