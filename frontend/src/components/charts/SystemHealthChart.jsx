@@ -1,6 +1,13 @@
-import PropTypes from 'prop-types';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import './SystemHealthChart.css';
+import PropTypes from "prop-types";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import "./SystemHealthChart.css";
 
 const SystemHealthChart = ({ healthData }) => {
   if (!healthData) {
@@ -19,32 +26,32 @@ const SystemHealthChart = ({ healthData }) => {
   // Prepare data for the pie chart
   const data = [
     {
-      name: 'Normal',
+      name: "Normal",
       value: healthData.normal || 0,
-      color: 'var(--status-ok)',
-      description: '< 80% loading'
+      color: "var(--status-ok)",
+      description: "< 80% loading",
     },
     {
-      name: 'Warning',
+      name: "Warning",
       value: healthData.warning || 0,
-      color: 'var(--status-warning)',
-      description: '80-95% loading'
+      color: "var(--status-warning)",
+      description: "80-95% loading",
     },
     {
-      name: 'Critical',
+      name: "Critical",
       value: healthData.critical || 0,
-      color: 'var(--status-critical)',
-      description: '95-100% loading'
+      color: "var(--status-critical)",
+      description: "95-100% loading",
     },
     {
-      name: 'Overload',
+      name: "Overload",
       value: healthData.overloaded || 0,
-      color: 'var(--status-overload)',
-      description: '> 100% loading'
-    }
-  ].filter(item => item.value > 0); // Only show segments with values
+      color: "var(--status-overload)",
+      description: "> 100% loading",
+    },
+  ].filter((item) => item.value > 0); // Only show segments with values
 
-  const COLORS = data.map(d => d.color);
+  const COLORS = data.map((d) => d.color);
 
   // Custom label renderer
   const renderLabel = (entry) => {
@@ -62,7 +69,8 @@ const SystemHealthChart = ({ healthData }) => {
             {data.name}
           </p>
           <p className="tooltip-value">
-            {data.value} lines ({((data.value / healthData.total_lines) * 100).toFixed(1)}%)
+            {data.value} lines (
+            {((data.value / healthData.total_lines) * 100).toFixed(1)}%)
           </p>
           <p className="tooltip-description">{data.description}</p>
         </div>
@@ -75,7 +83,9 @@ const SystemHealthChart = ({ healthData }) => {
     <div className="card health-chart-card">
       <div className="card-header">
         <h3 className="card-title">System Health Overview</h3>
-        <span className="total-lines">{healthData.total_lines} Total Lines</span>
+        <span className="total-lines">
+          {healthData.total_lines} Total Lines
+        </span>
       </div>
       <div className="card-body">
         <div className="health-chart-container">
@@ -102,13 +112,29 @@ const SystemHealthChart = ({ healthData }) => {
 
           {/* Center display of key metric */}
           <div className="chart-center-metric">
-            <div className="center-value">{healthData.avg_loading?.toFixed(1) || 0}%</div>
-            <div className="center-label">Avg Loading</div>
+            <div className="center-value">
+              {((healthData.normal / healthData.total_lines) * 100).toFixed(0)}%
+            </div>
+            <div className="center-label">Normal</div>
           </div>
         </div>
 
         {/* Detailed Stats */}
         <div className="health-stats-grid">
+          <div className="health-stat">
+            <div className="stat-header">
+              <span
+                className="stat-indicator"
+                style={{ backgroundColor: "var(--primary-red)" }}
+              ></span>
+              <span className="stat-name">Average Loading</span>
+            </div>
+            <div className="stat-value-row">
+              <span className="stat-count">
+                {healthData.avg_loading?.toFixed(1) || 0}%
+              </span>
+            </div>
+          </div>
           {data.map((item, index) => (
             <div key={index} className="health-stat">
               <div className="stat-header">
@@ -119,10 +145,10 @@ const SystemHealthChart = ({ healthData }) => {
                 <span className="stat-name">{item.name}</span>
               </div>
               <div className="stat-value-row">
-                <span className="stat-count">{item.value}</span>
-                <span className="stat-percent">
-                  {((item.value / healthData.total_lines) * 100).toFixed(0)}%
+                <span className="stat-count">
+                  {item.value}/{healthData.total_lines}
                 </span>
+                <span className="stat-percent">lines</span>
               </div>
             </div>
           ))}
@@ -132,20 +158,22 @@ const SystemHealthChart = ({ healthData }) => {
         <div className="health-metrics">
           <div className="metric-item">
             <span className="metric-label">Peak Loading:</span>
-            <span className={`metric-value ${
-              healthData.max_loading >= 95
-                ? 'loading-critical'
-                : healthData.max_loading >= 80
-                ? 'loading-warning'
-                : 'loading-ok'
-            }`}>
+            <span
+              className={`metric-value ${
+                healthData.max_loading >= 95
+                  ? "loading-critical"
+                  : healthData.max_loading >= 80
+                  ? "loading-warning"
+                  : "loading-ok"
+              }`}
+            >
               {healthData.max_loading?.toFixed(1) || 0}%
             </span>
           </div>
           <div className="metric-item">
             <span className="metric-label">Most Stressed:</span>
             <span className="metric-value text-secondary">
-              {healthData.most_stressed_line || 'N/A'}
+              {healthData.most_stressed_line || "N/A"}
             </span>
           </div>
         </div>
@@ -163,8 +191,8 @@ SystemHealthChart.propTypes = {
     overloaded: PropTypes.number,
     avg_loading: PropTypes.number,
     max_loading: PropTypes.number,
-    most_stressed_line: PropTypes.string
-  })
+    most_stressed_line: PropTypes.string,
+  }),
 };
 
 export default SystemHealthChart;
